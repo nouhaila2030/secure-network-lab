@@ -1,0 +1,19 @@
+# Custom Suricata rules (Services > Suricata > WAN Rules > custom.rules)
+# Reconstructed from the lab report. If your pfSense file differs, keep your tested version.
+# threshold "both" = alert once per source when the count is reached inside the time window.
+
+# 9001 - Nmap SYN scan: 20 SYN packets from one source in 2 seconds
+alert tcp any any -> $HOME_NET any (msg:"Nmap SYN scan"; flags:S; threshold:type both, track by_src, count 20, seconds 2; sid:9001; rev:1;)
+
+# 9002 - SSH brute force: 5 packets from one source to the SSH port (2222) in 60 seconds
+alert tcp any any -> $HOME_NET 2222 (msg:"SSH Brute Force"; flow:to_server; threshold:type both, track by_src, count 5, seconds 60; sid:9002; rev:1;)
+
+# 9003 - ICMP flood: 50 ICMP packets from one source in 5 seconds
+# In the lab this rule did not produce alerts during the flood.
+alert icmp any any -> $HOME_NET any (msg:"ICMP Flood"; threshold:type both, track by_src, count 50, seconds 5; sid:9003; rev:1;)
+
+# 9004 - SYN scan detection: SYN packets without ACK, 20 in 2 seconds
+# Note: in Suricata, "flags:S" already matches a SYN without ACK. The report text showed
+# a longer flags expression that the PDF rendered ambiguously, so check this line against
+# the rule actually loaded on pfSense.
+alert tcp any any -> $HOME_NET any (msg:"SYN Scan Detection"; flags:S; threshold:type both, track by_src, count 20, seconds 2; sid:9004; rev:1;)

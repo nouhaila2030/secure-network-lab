@@ -1,0 +1,17 @@
+# /etc/ssh/sshd_config -- settings changed on the Ubuntu server (lab)
+# Always test before restarting:  sudo sshd -t && sudo systemctl restart ssh
+
+Port 2222
+PermitRootLogin no
+PasswordAuthentication no
+PubkeyAuthentication yes
+MaxAuthTries 3
+
+# SFTP: members of the "sftpusers" group are restricted to SFTP inside a chroot.
+# Note: ForceCommand removes shell access for these accounts, so use a dedicated
+# SFTP account and not the administrator account.
+Match Group sftpusers
+    ChrootDirectory /var/sftp
+    ForceCommand internal-sftp
+    AllowTcpForwarding no
+    X11Forwarding no
